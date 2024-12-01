@@ -68,7 +68,7 @@ team_t team = {
 #define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
 #define SUCC(bp) ((char *)(bp) + WSIZE)
 #define PRE(bp) ((char *)(bp))
-#define GET_PRE(bp) (*(int*)((char *)(bp)))
+#define GET_PRE(bp) (*(int*)(PRE(bp)))
 #define GET_SUCC(bp) (*(int*)(SUCC(bp)))
 /* Given block pointer bp, compute address of next and previous blocks */
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE)))
@@ -117,22 +117,58 @@ static void *coalesce(void *bp) {
     return bp;
 }
 
+static void delete_from_freelist(char *bp) {
+    int succ = GET(SUCC(bp));
+    int pred = GET(PRE(bp));
+ 
+ 
+ 
+    //  fflush(stdout);
+    if (pred == -1 && succ == -1) {
+        // The block is the only element in the list (root of the free list)
+        PUT(SUCC(heap_list), -1);
+    } else if (pred == -1) {
+        // Block is at the head (root) of the list, just update the root successor
+        PUT(SUCC(heap_list), succ);
+        PUT(PRE(heap_list + succ), -1);
+    } else if (succ == -1) {
+        // Block is at the tail of the list, update the predecessor
+        PUT(SUCC(heap_list + pred), -1);
+    } else {
+        // Block is in the middle, update both predecessor and successor
+        printf("What is that\n");
+        PUT(SUCC(heap_list + pred), succ);
+        PUT(PRE(heap_list + succ), pred);
+    }
 
+ 
+}
 static void* insert_in_freelist(char *bp) {
+   
     int rootSucessor = GET_SUCC(heap_list);
+  
     if (rootSucessor == -1) {
         //First Insertion
         PUT(SUCC(heap_list), bp - heap_list);
-        // printf("Putting in Root Sucessor %d\n" , bp - heap_list);
+        PUT(SUCC(bp), -1);
+        PUT(PRE(bp), -1);
     } else {
         //Insertion Policy is LIFO
         unsigned int oldSucessor = GET(SUCC(heap_list));
         PUT(SUCC(heap_list), bp - heap_list);
         PUT(SUCC(bp), oldSucessor);
-        PUT(PRE(heap_list + oldSucessor), SUCC(heap_list));
-        // printf("Putting in Root Sucessor %d\n" , bp - heap_list);
+        PUT(PRE(heap_list + oldSucessor), GET_SUCC(heap_list));
+        // printf("Adjustign Predecssor of old Sucessor to Me is %d\n", SUCC(heap_list));
+        PUT(PRE(bp), -1);
+        
     }
+    //MAKE IT NOT ALLOCATED
+    // printf("Size is Test %d", GET_SIZE(HDRP(bp)));
+    int size = GET_SIZE(HDRP(bp));
+    PUT(HDRP(bp), PACK(size, 0));
+    PUT(FTRP(bp), PACK(size, 0));
 
+    // printf("Succ is %d While Pre is %d\n",GET_SUCC(heap_list), GET_PRE(heap_list));
     return NULL;
 }
 
@@ -143,7 +179,7 @@ static void *extend_heap(size_t words) {
 
     // Allocate an even number of words to maintain alignment
     size = (words % 2) ? (words + 1) * WSIZE : words * WSIZE;
-    printf ("Extending Size with %d \n", size);
+    // printf ("Extending Size with %d \n", size);
         // printf("Extending Heap with %d\n", size);
     if ((long)(bp = mem_sbrk(size)) == -1) {
         printf("Failed inside extend_heap\n");
@@ -174,15 +210,13 @@ int mm_init(void)
     char *x = heap_list;
     heap_list += 2 * WSIZE;
  
-    // printf("precssor is%d\n", GET_PRE(heap_list));
-    // printf("succ is%d\n", *(int*)((char*)heap_list + (WSIZE)));
     //TODO check error
   
     extend_heap(CHUNKSIZE/WSIZE);
     //TODO adjust free linked list
 
     // PUT(SUCC(heap_list), NEXT_BLKP(heap_list) + WSIZE -  x);
-    // printf("Suffix Offset%d\n",NEXT_BLKP(heap_list) - heap_list);
+ 
     return 0;
 }
 
@@ -201,47 +235,67 @@ int mm_init(void)
 //         return (void *)((char *)p + SIZE_T_SIZE);
 //     }
 // }
- 
- static void* find_fitOpitimized(size_t asize) 
+  static void* find_fitOpitimized(size_t asize) 
 {
- 
+    if (GET_SUCC(heap_list) == -1) return NULL;
+    void* bp = heap_list + GET_SUCC(heap_list);
+    void *oldBp;
+    do {
+        // printf("Check Validty of Size %d \n", GET_SIZE(HDRP(bp)));
+        if (!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
+            return bp;
+        }
+        oldBp = bp;
+        bp = heap_list + GET_SUCC(bp);
+    } while(GET_SUCC(oldBp) != -1);
+
+    // printf("Not Found While asking for %d in find_fit\n", asize);
+    return NULL; /* No fit */
+
 }
+ 
 
 static void* find_fit(size_t asize) 
 {
     /* First-fit search */
     void* bp;
-    printf("Required size is %d\n", asize);
+ 
     for (bp = heap_list; GET_SIZE(HDRP(bp)) > 0; bp = NEXT_BLKP(bp)) {
-        printf("Size of Candidate is %d\n", GET_SIZE(HDRP(bp)));
+   
         if (!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
 
             return bp;
         }
     }
-    printf("Not Found in find_fit\n");
+ 
     return NULL; /* No fit */
 }
 void *mm_malloc(size_t size)
 {   
+    // fflush(stdout);
     if (size < 8) size = 8; //minumum requirments because of predcssor and sucessor
     int newSize = ALIGN(size);
- 
     int totalSize = ALIGN(newSize + 8);
+    // printf("Asking For Malloc with Size %d\n", totalSize);
     //|Header|Payload|Footer| (Payload become metadata in freeblocks)
     //We Align the Payload (size) and put the 8 of footer and header and align the whole block
    
-    void *bp = find_fit(totalSize);
+    // find_fitOpitimized
+    void *bp = find_fitOpitimized(totalSize);
     
     if (bp == NULL) {
         fprintf(stderr, "Error: No suitable block found for size %zu\n", totalSize);
         extend_heap(totalSize/WSIZE);
-        bp = find_fit(totalSize);
+        bp = find_fitOpitimized(totalSize);
         if (bp == NULL) {{
             printf("Unexpected Error in mm_malloc\n");
             return NULL;
         }}
-    } 
+    }  
+ 
+   
+    delete_from_freelist(bp);
+  
     size_t bp_size = GET_SIZE(HDRP(bp));
     assert(totalSize <= bp_size);
     //Splitting Or No?
@@ -260,12 +314,15 @@ void *mm_malloc(size_t size)
 
 void mm_free(void *ptr)
 {
-    
+    // printf("Asking to Free with Size %d\n", GET_SIZE(HDRP(ptr)));
+    insert_in_freelist(ptr);
 }
 
 /*
  * mm_realloc - Implemented simply in terms of mm_malloc and mm_free
  */
+//TODO
+//Can we use realloc in place? stanford lec 24
 void *mm_realloc(void *ptr, size_t size)
 {
     void *oldptr = ptr;

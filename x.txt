@@ -7,175 +7,259 @@ gcc -Wall -O2 -m32   -c -o fcyc.o fcyc.c
 gcc -Wall -O2 -m32   -c -o clock.o clock.c
 gcc -Wall -O2 -m32   -c -o ftimer.o ftimer.c
 gcc -Wall -O2 -m32 -o mdriver mdriver.o mm.o memlib.o fsecs.o fcyc.o clock.o ftimer.o
-./mdriver -V -f short4-bal.rep
+./mdriver -V -f ./traces/short1.rep
 Team Name:FC
 Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
 Measuring performance with gettimeofday().
 
 Testing mm malloc
-Reading tracefile: short4-bal.rep
-Checking mm_malloc for correctness, Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-efficiency, Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Max Utilized Total Size is 5104 While Current Heap Size is 5144 
+Reading tracefile: ./traces/short1.rep
+Checking mm_malloc for correctness, Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+efficiency, Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Max Utilized Total Size is 8144 While Current Heap Size is 10248 
 and performance.
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
-Extending Size with 4096 
-Required size is 4096
-Size of Candidate is 16
-Size of Candidate is 4096
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Not Found in find_fit
-Extending Size with 1024 
-Required size is 1024
-Size of Candidate is 16
-Size of Candidate is 4096
-Size of Candidate is 1024
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4080
+Found Fit Directly
+Succ of fit is -1 while pre is -1
+Deleting from freelist succ is -1, pred is -1
+Asking to Free with Size 4096
+Asking to Free with Size 2048
+Found Fit Directly
+Succ of fit is -1 while pre is 4112
+Deleting from freelist succ is -1, pred is 4112
+Asking to Free with Size 4080
+Asking to Free with Size 4096
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   99%       2  0.000112    18
-Total          99%       2  0.000112    18
+ 0       yes   79%      12  0.000246    49
+Total          79%      12  0.000246    49
 
-Perf index = 60 (util) + 1 (thru) = 61/100
+Perf index = 48 (util) + 3 (thru) = 51/100

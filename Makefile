@@ -29,4 +29,4 @@ clean:
 
 
 test:clean mdriver
-	./mdriver -V -f short4-bal.rep
+	./mdriver -V -f ./traces/short2.rep
