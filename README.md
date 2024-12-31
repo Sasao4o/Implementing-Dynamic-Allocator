@@ -27,4 +27,6 @@ While working on the dynamic allocator, the following questions are essential:
 
 ---
 
-Stay curious and keep exploring!
+## Resources
+Inner Workings of Malloc and Free
+https://www.cs.princeton.edu/courses/archive/fall06/cos217/lectures/14Memory-2x2.pdf
