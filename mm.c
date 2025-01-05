@@ -80,11 +80,47 @@ static char *heap_list;
 /* 
  * mm_init - initialize the malloc package.
  */
+static void delete_from_freelist(char *bp) {
+    assert(bp != heap_list);
+    int succ = GET(SUCC(bp));
+    int pred = GET(PRE(bp));
+    
+    if (pred == -1 && succ == -1) {
+        // The block is the only element in the list (root of the free list)
+ 
+        PUT(SUCC(heap_list), -1);
+        PUT(PRE(heap_list), -1);
+
+    } else if (pred == -1) {
+        // Block is at the head (root) of the list, just update the root successor
+   
+        PUT(SUCC(heap_list), succ);
+        PUT(PRE(heap_list + succ), -1);
+    } else if (succ == -1) {
+        // Block is at the tail of the list, update the predecessor
+       
+        PUT(SUCC(heap_list + pred), -1);
+    } else {
+        // Block is in the middle, update both predecessor and successor
+
+        PUT(SUCC(heap_list + pred), succ);
+        PUT(PRE(heap_list + succ), pred);
+    }
+    //Allocate it
+        int size = GET_SIZE(HDRP(bp));
+ 
+        PUT(HDRP(bp), PACK(size, 1));
+        PUT(FTRP(bp), PACK(size, 1));
+        assert(GET_ALLOC(HDRP(bp)) == 1);   
+        assert(GET_ALLOC(FTRP(bp)) == 1);   
+
+}
 static void *coalesce(void *bp) {
     size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp))); // Allocation status of the previous block
     size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp))); // Allocation status of the next block
     size_t size = GET_SIZE(HDRP(bp));                  // Size of the current block
-
+    assert(GET_ALLOC(HDRP(heap_list)) == 1);    
+  
     // Case 1: Both previous and next blocks are allocated
     if (prev_alloc && next_alloc) {
         return bp;
@@ -93,103 +129,88 @@ static void *coalesce(void *bp) {
     // Case 2: Previous block is allocated, next block is free
     else if (prev_alloc && !next_alloc) {
         size += GET_SIZE(HDRP(NEXT_BLKP(bp)));        // Add next block's size to the current block
+     
+        delete_from_freelist(NEXT_BLKP(bp));
         PUT(HDRP(bp), PACK(size, 0));                // Update header of the current block
         PUT(FTRP(bp), PACK(size, 0));                // Update footer of the current block
+
     }
 
     // Case 3: Previous block is free, next block is allocated
     else if (!prev_alloc && next_alloc) {
+  
+        delete_from_freelist(PREV_BLKP(bp));
         size += GET_SIZE(HDRP(PREV_BLKP(bp)));       // Add previous block's size to the current block
         PUT(FTRP(bp), PACK(size, 0));                // Update footer of the current block
         PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));     // Update header of the previous block
         bp = PREV_BLKP(bp);                          // Update bp to point to the previous block
+ 
     }
 
     // Case 4: Both previous and next blocks are free
-    else {
+    else if (!prev_alloc && !next_alloc) {
+        
+         assert(NEXT_BLKP(bp) != PREV_BLKP(bp));
+        delete_from_freelist(NEXT_BLKP(bp));
+        delete_from_freelist(PREV_BLKP(bp));
         size += GET_SIZE(HDRP(PREV_BLKP(bp))) +
                 GET_SIZE(FTRP(NEXT_BLKP(bp)));       // Add sizes of previous and next blocks
         PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));     // Update header of the previous block
         PUT(FTRP(NEXT_BLKP(bp)), PACK(size, 0));     // Update footer of the next block
         bp = PREV_BLKP(bp);                          // Update bp to point to the previous block
     }
-
+    assert(GET_SIZE(HDRP(bp)) == GET_SIZE(FTRP(bp)));
+    assert(GET_SIZE(HDRP(bp)) == size);
     return bp;
 }
 
-static void delete_from_freelist(char *bp) {
-    int succ = GET(SUCC(bp));
-    int pred = GET(PRE(bp));
  
- 
- 
-    //  fflush(stdout);
-    if (pred == -1 && succ == -1) {
-        // The block is the only element in the list (root of the free list)
-        PUT(SUCC(heap_list), -1);
-    } else if (pred == -1) {
-        // Block is at the head (root) of the list, just update the root successor
-        PUT(SUCC(heap_list), succ);
-        PUT(PRE(heap_list + succ), -1);
-    } else if (succ == -1) {
-        // Block is at the tail of the list, update the predecessor
-        PUT(SUCC(heap_list + pred), -1);
-    } else {
-        // Block is in the middle, update both predecessor and successor
-        printf("What is that\n");
-        PUT(SUCC(heap_list + pred), succ);
-        PUT(PRE(heap_list + succ), pred);
-    }
-
- 
-}
 static void* insert_in_freelist(char *bp) {
-   
+    assert(GET_SIZE(HDRP(bp)) != 0);   
+     fflush(stdout);
+    bp = (char*)coalesce(bp); 
     int rootSucessor = GET_SUCC(heap_list);
-  
     if (rootSucessor == -1) {
         //First Insertion
-        PUT(SUCC(heap_list), bp - heap_list);
+        PUT(SUCC(heap_list), bp - heap_list);  
         PUT(SUCC(bp), -1);
         PUT(PRE(bp), -1);
     } else {
         //Insertion Policy is LIFO
         unsigned int oldSucessor = GET(SUCC(heap_list));
-        PUT(SUCC(heap_list), bp - heap_list);
+        // assert(GET_SIZE(HDRP(heap_list + oldSucessor)) == GET_SIZE(FTRP(heap_list + oldSucessor)));
+        // assert(GET_ALLOC(HDRP(heap_list + oldSucessor)) == 0);    
+        // assert(GET_ALLOC(FTRP(heap_list + oldSucessor)) == 0);
+        unsigned int currentSucessor = bp - heap_list;    
+        PUT(SUCC(heap_list), currentSucessor);
         PUT(SUCC(bp), oldSucessor);
-        PUT(PRE(heap_list + oldSucessor), GET_SUCC(heap_list));
-        // printf("Adjustign Predecssor of old Sucessor to Me is %d\n", SUCC(heap_list));
+        PUT(PRE(heap_list + oldSucessor), currentSucessor);
         PUT(PRE(bp), -1);
         
     }
     //MAKE IT NOT ALLOCATED
-    // printf("Size is Test %d", GET_SIZE(HDRP(bp)));
-    int size = GET_SIZE(HDRP(bp));
+
+    unsigned int size = GET_SIZE(HDRP(bp));
     PUT(HDRP(bp), PACK(size, 0));
     PUT(FTRP(bp), PACK(size, 0));
-
-    // printf("Succ is %d While Pre is %d\n",GET_SUCC(heap_list), GET_PRE(heap_list));
-    return NULL;
+     return NULL;
 }
 
 static void *extend_heap(size_t words) {
- 
+     fflush(stdout); 
     char *bp;       // Pointer to the new block
     size_t size;    // Size to extend the heap
 
     // Allocate an even number of words to maintain alignment
     size = (words % 2) ? (words + 1) * WSIZE : words * WSIZE;
-    // printf ("Extending Size with %d \n", size);
-        // printf("Extending Heap with %d\n", size);
     if ((long)(bp = mem_sbrk(size)) == -1) {
-        printf("Failed inside extend_heap\n");
         return NULL; // Return NULL if heap extension fails
     }
-
     // Initialize the free block header/footer and the epilogue header
     PUT(HDRP(bp), PACK(size, 0));                // Free block header
     PUT(FTRP(bp), PACK(size, 0));                // Free block footer
     PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));        // New epilogue header
+ 
     insert_in_freelist(bp);
     // Coalesce if the previous block was free
     // return coalesce(bp);
@@ -209,7 +230,7 @@ int mm_init(void)
     PUT(heap_list + (5 *WSIZE) , PACK(0, 1)); //Epilogue Header
     char *x = heap_list;
     heap_list += 2 * WSIZE;
- 
+
     //TODO check error
   
     extend_heap(CHUNKSIZE/WSIZE);
@@ -241,7 +262,6 @@ int mm_init(void)
     void* bp = heap_list + GET_SUCC(heap_list);
     void *oldBp;
     do {
-        // printf("Check Validty of Size %d \n", GET_SIZE(HDRP(bp)));
         if (!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
             return bp;
         }
@@ -270,10 +290,27 @@ static void* find_fit(size_t asize)
  
     return NULL; /* No fit */
 }
+
+static void* split (char *bp, size_t requiredSize) {
+ 
+    int currentSize = GET_SIZE(HDRP(bp));
+    if (currentSize == requiredSize) return;
+    int diff = currentSize - requiredSize;
+     if (diff < 16) return;
+    //TODO I Guess on Small DIFF I shouldn't split (what if the new size is less than header and footer)
+    PUT(FTRP(bp), PACK(diff, 0));
+    PUT(HDRP(bp), PACK(requiredSize,1));
+    PUT(FTRP(bp), PACK(requiredSize,1));
+    PUT(HDRP(NEXT_BLKP(bp)), PACK(diff, 0)); 
+    assert(GET_SIZE(HDRP(NEXT_BLKP(bp))) != 0);
+    insert_in_freelist(NEXT_BLKP(bp));
+     // assert(1 != 0);
+
+}
 void *mm_malloc(size_t size)
 {   
     // fflush(stdout);
-    if (size < 8) size = 8; //minumum requirments because of predcssor and sucessor
+    if (size < 8) size = 8; //minumum requirments because of predcssor and sucessor and padding
     int newSize = ALIGN(size);
     int totalSize = ALIGN(newSize + 8);
     // printf("Asking For Malloc with Size %d\n", totalSize);
@@ -284,23 +321,33 @@ void *mm_malloc(size_t size)
     void *bp = find_fitOpitimized(totalSize);
     
     if (bp == NULL) {
-        fprintf(stderr, "Error: No suitable block found for size %zu\n", totalSize);
+        // printf("Extend in malloc\n");
+        // fprintf(stderr, "Error: No suitable block found for size %zu\n", totalSize);
+      
         extend_heap(totalSize/WSIZE);
         bp = find_fitOpitimized(totalSize);
         if (bp == NULL) {{
             printf("Unexpected Error in mm_malloc\n");
             return NULL;
         }}
-    }  
- 
+    }   else {
+        // printf("Found While Asking For %d\n", totalSize);
+    }
+    //    printf(" Asking For %d after extending from %d \n", totalSize, size);
+        fflush(stdout);
+        // printf("The Block Found has Size %d\n", GET_SIZE(HDRP(bp)));    
    
     delete_from_freelist(bp);
   
     size_t bp_size = GET_SIZE(HDRP(bp));
     assert(totalSize <= bp_size);
     //Splitting Or No?
+     
     PUT(HDRP(bp), PACK(bp_size, 1));
     PUT(FTRP(bp), PACK(bp_size, 1));
+    
+    split(bp,totalSize);
+    // printf("Returnning %p with Size %d\n", bp, GET_SIZE(HDRP(bp)));
     return bp;
  
 }
@@ -314,7 +361,8 @@ void *mm_malloc(size_t size)
 
 void mm_free(void *ptr)
 {
-    // printf("Asking to Free with Size %d\n", GET_SIZE(HDRP(ptr)));
+    //  printf("Asking to Free with Size %d ptr = %p\n", GET_SIZE(HDRP(ptr)), ptr);
+    fflush(stdout);
     insert_in_freelist(ptr);
 }
 
@@ -325,6 +373,9 @@ void mm_free(void *ptr)
 //Can we use realloc in place? stanford lec 24
 void *mm_realloc(void *ptr, size_t size)
 {
+
+    // printf("Constant is %d\n", SIZE_T_SIZE);
+    //  printf("Reallocating %p to size %d \n", ptr, size);
     void *oldptr = ptr;
     void *newptr;
     size_t copySize;
@@ -332,12 +383,12 @@ void *mm_realloc(void *ptr, size_t size)
     newptr = mm_malloc(size);
     if (newptr == NULL)
       return NULL;
-    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+    copySize = GET_SIZE(HDRP(oldptr));
     if (size < copySize)
       copySize = size;
-    memcpy(newptr, oldptr, copySize);
-    mm_free(oldptr);
-    return newptr;
+     memcpy(newptr, oldptr, copySize);
+     mm_free(oldptr);
+     return newptr;
 }
 
 
@@ -350,6 +401,7 @@ void *mm_realloc(void *ptr, size_t size)
 
 
 
+ 
 
 
 
