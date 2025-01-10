@@ -1,1 +1,217 @@
- 
+rm -f *~ *.o mdriver
+gcc -Wall -O2 -m32   -c -o mdriver.o mdriver.c
+gcc -Wall -O2 -m32   -c -o mm.o mm.c
+gcc -Wall -O2 -m32   -c -o memlib.o memlib.c
+gcc -Wall -O2 -m32   -c -o fsecs.o fsecs.c
+gcc -Wall -O2 -m32   -c -o fcyc.o fcyc.c
+gcc -Wall -O2 -m32   -c -o clock.o clock.c
+gcc -Wall -O2 -m32   -c -o ftimer.o ftimer.c
+gcc -Wall -O2 -m32 -o mdriver mdriver.o mm.o memlib.o fsecs.o fcyc.o clock.o ftimer.o
+./mdriver -V -f ./traces/amptjp-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/amptjp-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 2012279 While Current Heap Size is 2244016 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   90%    5694  0.000207 27481
+Total          90%    5694  0.000207 27481
+
+Perf index = 54 (util) + 40 (thru) = 94/100
+./mdriver -V -f ./traces/binary2-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/binary2-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 576000 While Current Heap Size is 1119904 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   51%   24000  0.027715   866
+Total          51%   24000  0.027715   866
+
+Perf index = 31 (util) + 40 (thru) = 71/100
+./mdriver -V -f ./traces/coalescing-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/coalescing-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 8190 While Current Heap Size is 12328 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   66%   14400  0.000221 65188
+Total          66%   14400  0.000221 65188
+
+Perf index = 40 (util) + 40 (thru) = 80/100
+./mdriver -V -f ./traces/expr-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/expr-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 3421135 While Current Heap Size is 3549000 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   96%    5380  0.000240 22435
+Total          96%    5380  0.000240 22435
+
+Perf index = 58 (util) + 40 (thru) = 98/100
+./mdriver -V -f ./traces/random2-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/random2-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 14432586 While Current Heap Size is 17000960 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   85%    4800  0.000443 10847
+Total          85%    4800  0.000443 10847
+
+Perf index = 51 (util) + 40 (thru) = 91/100
+./mdriver -V -f ./traces/realloc2-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/realloc2-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 28119 While Current Heap Size is 49512 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   57%   14401  0.000135106516
+Total          57%   14401  0.000135106516
+
+Perf index = 34 (util) + 40 (thru) = 74/100
+./mdriver -V -f ./traces/short2.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/short2.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 18314 While Current Heap Size is 20384 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   90%      12  0.000011  1143
+Total          90%      12  0.000011  1143
+
+Perf index = 54 (util) + 40 (thru) = 94/100
+./mdriver -V -f ./traces/binary-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/binary-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 1152000 While Current Heap Size is 2096064 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   55%   12000  0.006936  1730
+Total          55%   12000  0.006936  1730
+
+Perf index = 33 (util) + 40 (thru) = 73/100
+./mdriver -V -f ./traces/cccp-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/cccp-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 1679165 While Current Heap Size is 1828160 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   92%    5848  0.000161 36413
+Total          92%    5848  0.000161 36413
+
+Perf index = 55 (util) + 40 (thru) = 95/100
+./mdriver -V -f ./traces/cp-decl-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/cp-decl-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 3165325 While Current Heap Size is 3336800 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   95%    6648  0.000305 21825
+Total          95%    6648  0.000305 21825
+
+Perf index = 57 (util) + 40 (thru) = 97/100
+./mdriver -V -f ./traces/random-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/random-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 15612491 While Current Heap Size is 17711624 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   88%    4800  0.000394 12189
+Total          88%    4800  0.000394 12189
+
+Perf index = 53 (util) + 40 (thru) = 93/100
+./mdriver -V -f ./traces/realloc-bal.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/realloc-bal.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 615040 While Current Heap Size is 663224 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   93%   14401  0.000187 77052
+Total          93%   14401  0.000187 77052
+
+Perf index = 56 (util) + 40 (thru) = 96/100
+./mdriver -V -f ./traces/short1.rep
+Team Name:FC
+Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
+Measuring performance with gettimeofday().
+
+Testing mm malloc
+Reading tracefile: ./traces/short1.rep
+Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 8144 While Current Heap Size is 12280 
+and performance.
+
+Results for mm malloc:
+trace  valid  util     ops      secs  Kops
+ 0       yes   66%      12  0.000013   930
+Total          66%      12  0.000013   930
+
+Perf index = 40 (util) + 40 (thru) = 80/100

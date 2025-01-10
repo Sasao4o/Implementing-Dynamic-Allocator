@@ -200,7 +200,7 @@ static void* insert_in_freelist(char *bp) {
 }
 
 static void *extend_heap(size_t words) {
-      
+     fflush(stdout); 
     char *bp;       // Pointer to the new block
     size_t size;    // Size to extend the heap
 
@@ -209,13 +209,14 @@ static void *extend_heap(size_t words) {
     if ((long)(bp = mem_sbrk(size)) == -1) {
         return NULL; // Return NULL if heap extension fails
     }
-    // printf("Extended by %d\n", size);
     // Initialize the free block header/footer and the epilogue header
     PUT(HDRP(bp), PACK(size, 0));                // Free block header
     PUT(FTRP(bp), PACK(size, 0));                // Free block footer
     PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));        // New epilogue header
  
     insert_in_freelist(bp);
+    // Coalesce if the previous block was free
+    // return coalesce(bp);
     return NULL;
 }
 
@@ -260,13 +261,10 @@ int mm_init(void)
 // }
   static void* find_fitOpitimized(size_t asize) 
 {
-    if (GET_SUCC(heap_list) == -1)  {
-        return NULL;
-    }
+    if (GET_SUCC(heap_list) == -1) return NULL;
     void* bp = heap_list + GET_SUCC(heap_list);
     void *oldBp;
     do {
-        assert(GET_ALLOC(HDRP(bp)) == 0);
         if (!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
             return bp;
         }
@@ -341,7 +339,7 @@ void *mm_malloc(size_t size)
     if (bp == NULL) {
         // printf("Extend in malloc\n");
         // fprintf(stderr, "Error: No suitable block found for size %zu\n", totalSize);
-        // printf("i am sad i have to extend the heap\n");
+      
         extend_heap(totalSize/WSIZE);
         bp = find_fitOpitimized(totalSize);
         if (bp == NULL) {{
@@ -351,8 +349,8 @@ void *mm_malloc(size_t size)
     }   else {
         // printf("Found While Asking For %d\n", totalSize);
     }
-    //    printf(" Asking For %d after And i Gave Him %d \n", size, totalSize);
-    
+    //   printf(" Asking For %d after extending from %d \n", totalSize, size);
+        fflush(stdout);
         // printf("The Block Found has Size %d\n", GET_SIZE(HDRP(bp)));    
    
     delete_from_freelist(bp);
@@ -379,7 +377,6 @@ void *mm_malloc(size_t size)
 
 void mm_free(void *ptr)
 {
- 
     if (ptr == NULL) return;
     insert_in_freelist(ptr);
 }
@@ -411,7 +408,7 @@ void mm_free(void *ptr)
 //Can we use realloc in place? stanford lec 24
 void *mm_realloc(void *ptr, size_t size)
 {   
- 
+    
  
     void *oldptr = ptr;
     void *newptr;
@@ -422,7 +419,10 @@ void *mm_realloc(void *ptr, size_t size)
     size_t oldSize = copySize;
     size_t requiredSize = getPhysicalSize(size);
     if (oldSize >= requiredSize) return ptr;
-
+       if (size < copySize) {
+        //If we are shrinking the block we dont want all previous data
+        copySize = size;
+       }
     //Check if the next block is free and can be merged with the current block
     size_t nextSize = GET_SIZE(HDRP(NEXT_BLKP(oldptr)));
     if (nextSize != 0 && !GET_ALLOC(HDRP(NEXT_BLKP(oldptr))) && oldSize + nextSize >= requiredSize) {
@@ -430,32 +430,36 @@ void *mm_realloc(void *ptr, size_t size)
         delete_from_freelist(NEXT_BLKP(oldptr));
         PUT(HDRP(oldptr), PACK(oldSize + nextSize, 1));
         PUT(FTRP(oldptr), PACK(oldSize + nextSize, 1));
-        split(oldptr, requiredSize);
+ 
         return oldptr;
     }
 
     //Check if the previous block is free and can be merged with the current block
     size_t prevSize = GET_SIZE(HDRP(PREV_BLKP(oldptr)));
     if (prevSize != 0 && !GET_ALLOC(HDRP(PREV_BLKP(oldptr))) && oldSize + prevSize >= requiredSize) {
+        //So so so tricky bug we can corrupt the main block when moving so we cant move to previous agian :(
+        char * prevBlock = PREV_BLKP(oldptr);
         //Merge the two blocks
         delete_from_freelist(PREV_BLKP(oldptr));
         PUT(HDRP(PREV_BLKP(oldptr)), PACK(oldSize + prevSize, 1));
         PUT(FTRP(oldptr), PACK(oldSize + prevSize, 1));
-        split(PREV_BLKP(oldptr), requiredSize);
-        memcpy(PREV_BLKP(oldptr), oldptr, copySize);
-        return PREV_BLKP(oldptr);
+        // split(PREV_BLKP(oldptr), requiredSize);
+        memcpy(prevBlock, oldptr, copySize);
+         
+        return prevBlock;
     }
 
     //Check if the previous block and the next block is free and can be merged with current block
     if (prevSize != 0 && nextSize != 0 && !GET_ALLOC(HDRP(PREV_BLKP(oldptr))) && !GET_ALLOC(HDRP(NEXT_BLKP(oldptr))) && oldSize + prevSize + nextSize >= requiredSize) {
         //Merge the three blocks
+         char * prevBlock = PREV_BLKP(oldptr);
         delete_from_freelist(PREV_BLKP(oldptr));
         delete_from_freelist(NEXT_BLKP(oldptr));
         PUT(HDRP(PREV_BLKP(oldptr)), PACK(oldSize + prevSize + nextSize, 1));
         PUT(FTRP(NEXT_BLKP(oldptr)), PACK(oldSize + prevSize + nextSize, 1));
-        split(PREV_BLKP(oldptr), requiredSize);
-        memcpy(PREV_BLKP(oldptr), oldptr, copySize);
-        return PREV_BLKP(oldptr);
+        // split(PREV_BLKP(oldptr), requiredSize);
+        memcpy(prevBlock, oldptr, copySize);
+        return prevBlock;
     }
 
     //Allocate a new block, copy the data, and free the old block
@@ -464,8 +468,7 @@ void *mm_realloc(void *ptr, size_t size)
     newptr = mm_malloc(size);
     if (newptr == NULL)
       return NULL;
-    if (size < copySize)
-      copySize = size;
+  
      memcpy(newptr, oldptr, copySize);
      mm_free(oldptr);
      return newptr;
