@@ -200,7 +200,7 @@ static void* insert_in_freelist(char *bp) {
 }
 
 static void *extend_heap(size_t words) {
-     fflush(stdout); 
+      
     char *bp;       // Pointer to the new block
     size_t size;    // Size to extend the heap
 
@@ -209,14 +209,13 @@ static void *extend_heap(size_t words) {
     if ((long)(bp = mem_sbrk(size)) == -1) {
         return NULL; // Return NULL if heap extension fails
     }
+    // printf("Extended by %d\n", size);
     // Initialize the free block header/footer and the epilogue header
     PUT(HDRP(bp), PACK(size, 0));                // Free block header
     PUT(FTRP(bp), PACK(size, 0));                // Free block footer
     PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));        // New epilogue header
  
     insert_in_freelist(bp);
-    // Coalesce if the previous block was free
-    // return coalesce(bp);
     return NULL;
 }
 
@@ -261,10 +260,13 @@ int mm_init(void)
 // }
   static void* find_fitOpitimized(size_t asize) 
 {
-    if (GET_SUCC(heap_list) == -1) return NULL;
+    if (GET_SUCC(heap_list) == -1)  {
+        return NULL;
+    }
     void* bp = heap_list + GET_SUCC(heap_list);
     void *oldBp;
     do {
+        assert(GET_ALLOC(HDRP(bp)) == 0);
         if (!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
             return bp;
         }
@@ -339,7 +341,7 @@ void *mm_malloc(size_t size)
     if (bp == NULL) {
         // printf("Extend in malloc\n");
         // fprintf(stderr, "Error: No suitable block found for size %zu\n", totalSize);
-      
+        // printf("i am sad i have to extend the heap\n");
         extend_heap(totalSize/WSIZE);
         bp = find_fitOpitimized(totalSize);
         if (bp == NULL) {{
@@ -349,8 +351,8 @@ void *mm_malloc(size_t size)
     }   else {
         // printf("Found While Asking For %d\n", totalSize);
     }
-    //   printf(" Asking For %d after extending from %d \n", totalSize, size);
-        fflush(stdout);
+    //    printf(" Asking For %d after And i Gave Him %d \n", size, totalSize);
+    
         // printf("The Block Found has Size %d\n", GET_SIZE(HDRP(bp)));    
    
     delete_from_freelist(bp);
@@ -377,6 +379,7 @@ void *mm_malloc(size_t size)
 
 void mm_free(void *ptr)
 {
+ 
     if (ptr == NULL) return;
     insert_in_freelist(ptr);
 }

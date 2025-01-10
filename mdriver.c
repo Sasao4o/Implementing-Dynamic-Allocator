@@ -681,6 +681,7 @@ static int eval_mm_valid(trace_t *trace, int tracenum, range_t **ranges)
 
     }
 
+	// printf("Done Validation\n");
     /* As far as we know, this is a valid malloc package */
     return 1;
 }
@@ -713,6 +714,8 @@ static double eval_mm_util(trace_t *trace, int tracenum, range_t **ranges)
 	app_error("mm_init failed in eval_mm_util");
 
     for (i = 0;  i < trace->num_ops;  i++) {
+		// printf("Total size is %d \n", max_total_size);
+		// printf("Heap size is %d\n", mem_heapsize());
         switch (trace->ops[i].type) {
 
         case ALLOC: /* mm_alloc */
@@ -787,6 +790,7 @@ static double eval_mm_util(trace_t *trace, int tracenum, range_t **ranges)
  */
 static void eval_mm_speed(void *ptr)
 {
+ 
     int i, index, size, newsize;
     char *p, *newp, *oldp, *block;
     trace_t *trace = ((speed_t *)ptr)->trace;
