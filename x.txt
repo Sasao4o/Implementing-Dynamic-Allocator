@@ -19,8 +19,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   90%    5694  0.000290 19648
-Total          90%    5694  0.000290 19648
+ 0       yes   90%    5694  0.000233 24480
+Total          90%    5694  0.000233 24480
 
 Perf index = 54 (util) + 40 (thru) = 94/100
 ./mdriver -V -f ./traces/binary2-bal.rep
@@ -35,8 +35,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   51%   24000  0.030453   788
-Total          51%   24000  0.030453   788
+ 0       yes   51%   24000  0.029878   803
+Total          51%   24000  0.029878   803
 
 Perf index = 31 (util) + 40 (thru) = 71/100
 ./mdriver -V -f ./traces/coalescing-bal.rep
@@ -51,8 +51,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   66%   14400  0.000414 34783
-Total          66%   14400  0.000414 34783
+ 0       yes   66%   14400  0.000252 57098
+Total          66%   14400  0.000252 57098
 
 Perf index = 40 (util) + 40 (thru) = 80/100
 ./mdriver -V -f ./traces/expr-bal.rep
@@ -67,8 +67,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   96%    5380  0.000318 16929
-Total          96%    5380  0.000318 16929
+ 0       yes   96%    5380  0.000241 22287
+Total          96%    5380  0.000241 22287
 
 Perf index = 58 (util) + 40 (thru) = 98/100
 ./mdriver -V -f ./traces/random2-bal.rep
@@ -83,8 +83,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   85%    4800  0.000476 10093
-Total          85%    4800  0.000476 10093
+ 0       yes   85%    4800  0.000424 11313
+Total          85%    4800  0.000424 11313
 
 Perf index = 51 (util) + 40 (thru) = 91/100
 ./mdriver -V -f ./traces/realloc2-bal.rep
@@ -94,15 +94,14 @@ Measuring performance with gettimeofday().
 
 Testing mm malloc
 Reading tracefile: ./traces/realloc2-bal.rep
-Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 28119 While Current Heap Size is 83024 
-and performance.
+Checking mm_malloc for correctness, ERROR [trace 0, line 22]: mm_realloc did not preserve the data from old block
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   34%   14401  0.002120  6792
-Total          34%   14401  0.002120  6792
+ 0        no     -       -         -     -
+Total            -       -         -     -
 
-Perf index = 20 (util) + 40 (thru) = 60/100
+Terminated with 1 errors
 ./mdriver -V -f ./traces/short2.rep
 Team Name:FC
 Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
@@ -115,8 +114,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   90%      12  0.000011  1132
-Total          90%      12  0.000011  1132
+ 0       yes   90%      12  0.000017   694
+Total          90%      12  0.000017   694
 
 Perf index = 54 (util) + 40 (thru) = 94/100
 ./mdriver -V -f ./traces/allocAndReallocs.rep
@@ -131,8 +130,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes    2%       8  0.000011   741
-Total           2%       8  0.000011   741
+ 0       yes    2%       8  0.000012   656
+Total           2%       8  0.000012   656
 
 Perf index = 1 (util) + 40 (thru) = 41/100
 ./mdriver -V -f ./traces/binary-bal.rep
@@ -147,8 +146,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   55%   12000  0.007229  1660
-Total          55%   12000  0.007229  1660
+ 0       yes   55%   12000  0.007127  1684
+Total          55%   12000  0.007127  1684
 
 Perf index = 33 (util) + 40 (thru) = 73/100
 ./mdriver -V -f ./traces/cccp-bal.rep
@@ -163,8 +162,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   92%    5848  0.000233 25077
-Total          92%    5848  0.000233 25077
+ 0       yes   92%    5848  0.000175 33513
+Total          92%    5848  0.000175 33513
 
 Perf index = 55 (util) + 40 (thru) = 95/100
 ./mdriver -V -f ./traces/cp-decl-bal.rep
@@ -179,8 +178,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   95%    6648  0.000366 18144
-Total          95%    6648  0.000366 18144
+ 0       yes   95%    6648  0.000302 22028
+Total          95%    6648  0.000302 22028
 
 Perf index = 57 (util) + 40 (thru) = 97/100
 ./mdriver -V -f ./traces/random-bal.rep
@@ -195,8 +194,8 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   88%    4800  0.000461 10401
-Total          88%    4800  0.000461 10401
+ 0       yes   88%    4800  0.000409 11742
+Total          88%    4800  0.000409 11742
 
 Perf index = 53 (util) + 40 (thru) = 93/100
 ./mdriver -V -f ./traces/realloc-bal.rep
@@ -206,15 +205,15 @@ Measuring performance with gettimeofday().
 
 Testing mm malloc
 Reading tracefile: ./traces/realloc-bal.rep
-Checking mm_malloc for correctness, efficiency, Max Utilized Total Size is 615040 While Current Heap Size is 2057536 
-and performance.
+Checking mm_malloc for correctness, ERROR [trace 0, line 13]: Payload (0xf695c2b8:0xf695c637) overlaps another payload (0xf695c5c0:0xf695c63f)
+
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   30%   14401  0.032410   444
-Total          30%   14401  0.032410   444
+ 0        no     -       -         -     -
+Total            -       -         -     -
 
-Perf index = 18 (util) + 30 (thru) = 48/100
+Terminated with 1 errors
 ./mdriver -V -f ./traces/short1.rep
 Team Name:FC
 Member 1 :Mostafa Mohamed:sasa1x2001@gmail.com
@@ -227,7 +226,7 @@ and performance.
 
 Results for mm malloc:
 trace  valid  util     ops      secs  Kops
- 0       yes   66%      12  0.000011  1101
-Total          66%      12  0.000011  1101
+ 0       yes   66%      12  0.000012   976
+Total          66%      12  0.000012   976
 
 Perf index = 40 (util) + 40 (thru) = 80/100

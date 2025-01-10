@@ -27,6 +27,10 @@ handin:
 clean:
 	rm -f *~ *.o mdriver
 
+testOne: clean mdriver
+	./mdriver -V -f ./traces/coalescing-bal.rep
+	
+
 test: clean mdriver
 	./mdriver -V -f ./traces/amptjp-bal.rep
 	./mdriver -V -f ./traces/binary2-bal.rep

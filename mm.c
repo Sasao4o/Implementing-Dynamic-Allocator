@@ -73,13 +73,17 @@ team_t team = {
 /* Given block pointer bp, compute address of next and previous blocks */
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE)))
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
-
+ 
 
 //Global Variables
 static char *heap_list;
 /* 
  * mm_init - initialize the malloc package.
  */
+  size_t getPhysicalSize(size_t s) {
+    return ALIGN(s + 8);
+
+  }
 static void delete_from_freelist(char *bp) {
     assert(bp != heap_list);
     int succ = GET(SUCC(bp));
@@ -167,7 +171,6 @@ static void *coalesce(void *bp) {
  
 static void* insert_in_freelist(char *bp) {
     assert(GET_SIZE(HDRP(bp)) != 0);   
-     fflush(stdout);
     bp = (char*)coalesce(bp); 
     int rootSucessor = GET_SUCC(heap_list);
     if (rootSucessor == -1) {
@@ -307,6 +310,19 @@ static void* split (char *bp, size_t requiredSize) {
      // assert(1 != 0);
 
 }
+
+
+int mm_check() {
+    //This function will iterate through the heap and check consistency!
+    //1. Check if the block is in the free list 
+    
+    
+
+}
+
+
+
+
 void *mm_malloc(size_t size)
 {   
     // fflush(stdout);
@@ -333,7 +349,7 @@ void *mm_malloc(size_t size)
     }   else {
         // printf("Found While Asking For %d\n", totalSize);
     }
-    //    printf(" Asking For %d after extending from %d \n", totalSize, size);
+    //   printf(" Asking For %d after extending from %d \n", totalSize, size);
         fflush(stdout);
         // printf("The Block Found has Size %d\n", GET_SIZE(HDRP(bp)));    
    
@@ -347,7 +363,7 @@ void *mm_malloc(size_t size)
     PUT(FTRP(bp), PACK(bp_size, 1));
     
     split(bp,totalSize);
-    // printf("Returnning %p with Size %d\n", bp, GET_SIZE(HDRP(bp)));
+    //  printf("Returnning %p with Size %d\n", bp, GET_SIZE(HDRP(bp)));
     return bp;
  
 }
@@ -361,8 +377,7 @@ void *mm_malloc(size_t size)
 
 void mm_free(void *ptr)
 {
-    //  printf("Asking to Free with Size %d ptr = %p\n", GET_SIZE(HDRP(ptr)), ptr);
-    fflush(stdout);
+    if (ptr == NULL) return;
     insert_in_freelist(ptr);
 }
 
@@ -371,19 +386,81 @@ void mm_free(void *ptr)
  */
 //TODO
 //Can we use realloc in place? stanford lec 24
+// void *mm_reallocOld(void *ptr, size_t size)
+// {   
+ 
+ 
+//     void *oldptr = ptr;
+//     void *newptr;
+//     size_t copySize;
+    
+//     newptr = mm_malloc(size);
+//     if (newptr == NULL)
+//       return NULL;
+//     copySize = GET_SIZE(HDRP(oldptr));
+//     if (size < copySize)
+//       copySize = size;
+//      memcpy(newptr, oldptr, copySize);
+//      mm_free(oldptr);
+//      return newptr;
+// }
+ 
+//Can we use realloc in place? stanford lec 24
 void *mm_realloc(void *ptr, size_t size)
-{
-
-    // printf("Constant is %d\n", SIZE_T_SIZE);
-    //  printf("Reallocating %p to size %d \n", ptr, size);
+{   
+ 
+ 
     void *oldptr = ptr;
     void *newptr;
     size_t copySize;
-    
+    copySize = GET_SIZE(HDRP(oldptr));
+
+    //Check if the new size is less than the old size (i think this is bad utilization //TODO)
+    size_t oldSize = copySize;
+    size_t requiredSize = getPhysicalSize(size);
+    if (oldSize >= requiredSize) return ptr;
+
+    //Check if the next block is free and can be merged with the current block
+    size_t nextSize = GET_SIZE(HDRP(NEXT_BLKP(oldptr)));
+    if (nextSize != 0 && !GET_ALLOC(HDRP(NEXT_BLKP(oldptr))) && oldSize + nextSize >= requiredSize) {
+        //Merge the two blocks
+        delete_from_freelist(NEXT_BLKP(oldptr));
+        PUT(HDRP(oldptr), PACK(oldSize + nextSize, 1));
+        PUT(FTRP(oldptr), PACK(oldSize + nextSize, 1));
+        split(oldptr, requiredSize);
+        return oldptr;
+    }
+
+    //Check if the previous block is free and can be merged with the current block
+    size_t prevSize = GET_SIZE(HDRP(PREV_BLKP(oldptr)));
+    if (prevSize != 0 && !GET_ALLOC(HDRP(PREV_BLKP(oldptr))) && oldSize + prevSize >= requiredSize) {
+        //Merge the two blocks
+        delete_from_freelist(PREV_BLKP(oldptr));
+        PUT(HDRP(PREV_BLKP(oldptr)), PACK(oldSize + prevSize, 1));
+        PUT(FTRP(oldptr), PACK(oldSize + prevSize, 1));
+        split(PREV_BLKP(oldptr), requiredSize);
+        memcpy(PREV_BLKP(oldptr), oldptr, copySize);
+        return PREV_BLKP(oldptr);
+    }
+
+    //Check if the previous block and the next block is free and can be merged with current block
+    if (prevSize != 0 && nextSize != 0 && !GET_ALLOC(HDRP(PREV_BLKP(oldptr))) && !GET_ALLOC(HDRP(NEXT_BLKP(oldptr))) && oldSize + prevSize + nextSize >= requiredSize) {
+        //Merge the three blocks
+        delete_from_freelist(PREV_BLKP(oldptr));
+        delete_from_freelist(NEXT_BLKP(oldptr));
+        PUT(HDRP(PREV_BLKP(oldptr)), PACK(oldSize + prevSize + nextSize, 1));
+        PUT(FTRP(NEXT_BLKP(oldptr)), PACK(oldSize + prevSize + nextSize, 1));
+        split(PREV_BLKP(oldptr), requiredSize);
+        memcpy(PREV_BLKP(oldptr), oldptr, copySize);
+        return PREV_BLKP(oldptr);
+    }
+
+    //Allocate a new block, copy the data, and free the old block
+
+
     newptr = mm_malloc(size);
     if (newptr == NULL)
       return NULL;
-    copySize = GET_SIZE(HDRP(oldptr));
     if (size < copySize)
       copySize = size;
      memcpy(newptr, oldptr, copySize);
@@ -392,16 +469,6 @@ void *mm_realloc(void *ptr, size_t size)
 }
 
 
-
-
-
-
-
-
-
-
-
  
-
 
 
